@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>exam.6</title>
+    <script type="text/javascript" src="/js/three.js"></script>
+    <script type="text/javascript" src="/js/stats.js"></script>
+    <script type="text/javascript" src="/js/jquery-1.9.0.js"></script>
+    <script src="/js/OrbitControls.js"></script>
+    <style>
+        body{
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+
+<div id="WebGL-output">
+</div>
+
+<script type="text/javascript">
+
+    $(function () {
+
+        // 创建一个场景
+        var scene = new THREE.Scene();
+        var controls;
+        // 创建一个相机
+
+        var camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+        // 创建一个渲染器，设置尺寸大小 。
+        var renderer = new THREE.WebGLRenderer();
+
+        renderer.setClearColor(0xEEEEEE);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        //创建一个座标轴，红色是X轴，绿色是Y轴，蓝色是Z轴。AxisHelper(size)是座标轴的尺寸
+        var axes = new THREE.AxisHelper( 20 );
+        scene.add(axes);
+
+        // 创建一个平面
+        var planeGeometry = new THREE.PlaneGeometry(60,20,3,10);
+        var planeMaterial = new THREE.MeshBasicMaterial({color: 0xcccccc});
+        var plane = new THREE.Mesh(planeGeometry,planeMaterial);
+
+        // 放置平面
+        plane.rotation.x=-0.5*Math.PI;
+        plane.position.x=0
+        plane.position.y=10
+        plane.position.z=0
+
+        // 把平面加在场景中
+        scene.add(plane);
+
+        // 创建一个立方体
+        var cubeGeometry = new THREE.CubeGeometry(509,509,509,0,0,0);
+
+
+        //给六个面添加不同的材质
+        var mats = [];
+        mats.push(new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture( 'images/timg_r.jpg' )  }));
+        mats.push(new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture( 'images/timg_l.jpg' )  }));
+        mats.push(new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture( 'images/timg_u.jpg' )  }));
+        mats.push(new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture( 'images/timg_d.jpg' )  }));
+        mats.push(new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture( 'images/timg_f.jpg' ) }));
+        mats.push(new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture( 'images/timg_b.jpg' )  }));
+
+
+        // mats.push(new THREE.MeshBasicMaterial({ color: 0x009e60  }));
+        // // r
+        // mats.push(new THREE.MeshBasicMaterial({ color: 0x0051ba  }));
+        // // l
+        // mats.push(new THREE.MeshBasicMaterial({ color: 0xffd500  }));
+        // // u
+        // mats.push(new THREE.MeshBasicMaterial({ color: 0xff5800  }));
+        // // d
+        // mats.push(new THREE.MeshBasicMaterial({ color: 0xC41E3A }));
+        // // f
+        // mats.push(new THREE.MeshBasicMaterial({ color: 0xffffff }));
+        // // b
+
+
+        for (var i = 0; i < 6; i++)
+           mats[i].side = THREE.BackSide;
+
+        var skyboxMaterial = new THREE.MeshFaceMaterial(mats);
+
+        var cube = new THREE.Mesh(cubeGeometry, skyboxMaterial);
+
+        scene.add(cube);
+
+        // 放置相机的位置，并打开相机
+        camera.position.x =100;
+        camera.position.y = 100;
+        camera.position.z = 100;
+        camera.lookAt(scene.position);
+
+        $("#WebGL-output").append(renderer.domElement);
+
+        // CONTROLS
+        var  OrbitControls = new THREE.OrbitControls( camera, renderer.domElement );    
+        // OrbitControls.enableDamping = true;
+        // OrbitControls.dampingFactor = 0.25;
+        OrbitControls.noZoom = false;
+
+        // var guiControl=new function(){
+        //     this.
+        // }
+
+        
+        var stats = initStats();
+        var step = 0;
+
+        renders();
+
+        
+        function renders() {
+            // 用requestAnimationFrame进行渲染
+            requestAnimationFrame(renders);
+            renderer.render(scene, camera);
+            update();
+        }
+
+        function initStats() {
+            //fps显示统计
+            var stats = new Stats();
+
+            stats.setMode(0); // 0: fps, 1: ms
+
+            // 左上角对齐
+            stats.domElement.style.position = 'absolute';
+            stats.domElement.style.left = '0px';
+            stats.domElement.style.top = '0px';
+            stats.domElement.style.zIndex =100;
+
+            $("#WebGL-output").append( stats.domElement );
+
+            return stats;
+        }
+
+        function update()
+        {          
+            stats.update();
+            OrbitControls.update();
+
+        }
+        
+        renders();
+
+    });
+
+</script>
+</body>
+</html>

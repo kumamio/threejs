@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>exam.7</title>
+    <script type="text/javascript" src="/js/three.js"></script>
+    <script type="text/javascript" src="/js/stats.js"></script>
+    <script type="text/javascript" src="/js/jquery-1.9.0.js"></script>
+    <script src="/js/OrbitControls.js"></script>
+    <style>
+        body{
+            margin: 0;
+            overflow: hidden;
+        }
+        #control{
+        	height:30px;
+        	padding:0 30px;
+        	display: block;
+        	line-height: 30px;
+        	background-color: #fff;
+        	color:#333;
+        	border-radius: 5px;
+        	position: absolute;
+        	right:10px;
+        	top:10px;
+        	&:hover{
+        		text-decoration:none;
+        	};
+        }
+    </style>
+</head>
+<body>
+
+<div id="WebGL-output">
+	<a href="#none" id="control">add</a>
+</div>
+
+<script type="text/javascript">
+
+    $(function () {
+
+        // 创建一个场景
+        var scene = new THREE.Scene();
+        var controls;
+        // 创建一个相机
+
+        var camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+        // 创建一个渲染器，设置尺寸大小 。
+        var renderer = new THREE.WebGLRenderer({
+            maxLights:4
+        });
+
+        renderer.setClearColor(0xEEEEEE);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        //创建一个座标轴，红色是X轴，绿色是Y轴，蓝色是Z轴。AxisHelper(size)是座标轴的尺寸
+        var axes = new THREE.AxisHelper( 20 );
+        scene.add(axes);
+
+        // 创建一个平面
+        var planeGeometry = new THREE.PlaneGeometry(60,20,3,10);
+        var planeMaterial = new THREE.MeshBasicMaterial({color: 0xcccccc});
+        var plane = new THREE.Mesh(planeGeometry,planeMaterial);
+
+        // 放置平面
+        plane.rotation.x=-0.5*Math.PI;
+        plane.position.x=0
+        plane.position.y=10
+        plane.position.z=0
+
+        // 把平面加在场景中
+        // scene.add(plane);
+
+
+
+
+        var pointofLight = new THREE.PointLight( 0xffffff );
+
+        pointofLight.position.x = 300;
+        pointofLight.position.y = 300;
+        pointofLight.position.z = 330;
+        pointofLight.opacity = 300;
+
+
+        var pointofLight2 = new THREE.PointLight( 0xffff00 );
+
+        pointofLight2.position.x = -350;
+        pointofLight2.position.y = 350;
+        pointofLight2.position.z = -300;
+        pointofLight2.opacity = 300;
+
+
+        scene.add(pointofLight);
+        scene.add(pointofLight2);
+
+
+
+
+        // 创建一个立方体
+        var cubeGeometry = new THREE.CubeGeometry(400,400,400,0,0,0);
+
+
+        //给六个面添加不同的材质
+        var mats = [];
+        mats.push(new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture( 'images/bg1.jpg' )  }));
+        mats.push(new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture( 'images/bg1.jpg' )  }));
+        mats.push(new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture( 'images/bg1.jpg' )  }));
+        mats.push(new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture( 'images/bg1.jpg' )  }));
+        mats.push(new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture( 'images/bg1.jpg' ) }));
+        mats.push(new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture( 'images/bg1.jpg' )  }));
+
+
+        // mats.push(new THREE.MeshBasicMaterial({ color: 0x009e60  }));
+        // // r
+        // mats.push(new THREE.MeshBasicMaterial({ color: 0x0051ba  }));
+        // // l
+        // mats.push(new THREE.MeshBasicMaterial({ color: 0xffd500  }));
+        // // u
+        // mats.push(new THREE.MeshBasicMaterial({ color: 0xff5800  }));
+        // // d
+        // mats.push(new THREE.MeshBasicMaterial({ color: 0xC41E3A }));
+        // // f
+        // mats.push(new THREE.MeshBasicMaterial({ color: 0xffffff }));
+        // // b
+
+
+        for (var i = 0; i < 6; i++){
+            mats[i].side = THREE.BackSide;
+            mats[i].wrapS = mats[i].wrapT = THREE.RepeatWrapping;
+        }
+
+
+        var skyboxMaterial = new THREE.MeshFaceMaterial(mats);
+
+        var cube = new THREE.Mesh(cubeGeometry, skyboxMaterial);
+
+        scene.add(cube);
+
+
+
+
+        //创建另外一个立方体
+        var innerCubeGeometry = new THREE.CubeGeometry(300,300,300,0,0,0);
+
+		var innerCubeMaterial = new THREE.MeshBasicMaterial({color: 0xcccccc});
+		var innerboxMaterial = new THREE.MeshFaceMaterial(innerCubeMaterial);
+
+		var innercube = new THREE.Mesh(innerCubeGeometry, innerCubeMaterial);
+
+		// scene.add(innercube);
+
+		function addSphere () {
+			var geoms=[];
+			geoms.push(new THREE.SphereGeometry(4,20,20));
+			
+		}
+
+        var sphereGeometry = new THREE.SphereGeometry(4,20,20);
+        var sphereMaterial = new THREE.MeshLambertMaterial({color: 0x0c9da2});
+        var sphere = new THREE.Mesh(sphereGeometry,sphereMaterial);
+
+        // position the sphere
+        sphere.position.x=20;
+        sphere.position.y=4;
+        sphere.position.z=2;
+
+
+        // add the sphere to the scene
+        scene.add(sphere);
+
+
+
+        // 放置相机的位置，并打开相机
+        camera.position.x =150;
+        camera.position.y = 150;
+        camera.position.z = 160;
+        camera.lookAt(scene.position);
+
+        $("#WebGL-output").append(renderer.domElement);
+
+        // CONTROLS
+        var  OrbitControls = new THREE.OrbitControls( camera, renderer.domElement );    
+        // OrbitControls.enableDamping = true;
+        // OrbitControls.dampingFactor = 0.25;
+        OrbitControls.noZoom = false;
+
+        // var guiControl=new function(){
+        //     this.
+        // }
+
+        
+        var step = 0;
+
+        renders();
+
+        
+        function renders() {
+            // 用requestAnimationFrame进行渲染
+            requestAnimationFrame(renders);
+            renderer.render(scene, camera);
+            update();
+        }
+
+
+        function update()
+        {          
+            
+            OrbitControls.update();
+
+        }
+        
+        renders();
+
+        var nums=0;
+        $("#control").bind("click",function (){
+            console.log("nums+"+nums);
+            if (nums<=15) {
+
+                var icolor=["0xfca5ab","0x039c9a","0x785e5d","0xfea523","0xd52d00","0x04641a"];
+                var inter=[-1,1];
+                var sphereSize=Math.ceil(Math.random() * 40);
+                var sColor=Math.ceil(Math.random() * 6);
+                console.log(sColor);
+                // debugger;
+                // console.log("icolor[sColor]＝"+icolor[5]);
+                var sphereColor=icolor[sColor-1];
+                console.log(sphereColor);
+                var sphereGeometry=new THREE.SphereGeometry(sphereSize,20,20);
+                var sphereMaterial = new THREE.MeshLambertMaterial({color: parseInt(sphereColor)});
+                var sphere2 = new THREE.Mesh(sphereGeometry, sphereMaterial);
+                nums++;
+                sphere2.name="sphere-"+nums;
+                sphere2.position.x=Math.round(Math.random()*200)*inter[Math.ceil(Math.random() * 2-1)];
+                sphere2.position.y= Math.round(Math.random()*200)*inter[Math.ceil(Math.random() * 2-1)];
+                sphere2.position.z=Math.round(Math.random()*200)*inter[Math.ceil(Math.random() * 2-1)];
+                // debugger;
+                scene.add(sphere2);
+            }
+
+        })
+    });
+
+</script>
+</body>
+</html>

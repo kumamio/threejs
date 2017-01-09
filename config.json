@@ -1,0 +1,7 @@
+{
+	"host": "192.168.193.145",
+	"user": "www",
+	"password": "www",
+	"projectPath": "jdf_demo",
+	"localServerPort": 1080
+}
